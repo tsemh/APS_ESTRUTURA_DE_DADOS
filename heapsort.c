@@ -1,23 +1,38 @@
 #include <stdio.h>
 #include <stdbool.h>
+#include <time.h>
 
-int listaOrdenada[10];
+#include "lista.h"
+
+int listaOrdenada[TAMANHO_LISTA];
 int totalOrdenado = 0;
-
+ 
 typedef struct binary_heap{
-    int tamanho; // 'tamanho' é retorna o indice do ultimo elemento
-    int no[10];
+    int tamanho; // 'tamanho' retorna o indice do ultimo elemento
+    int no[TAMANHO_LISTA];
 } bHeap;
 
+bHeap arvore_dois;
 
 bHeap iniciarArvore(){
+    // Funcao para iniciar a Binary HEAP
     bHeap arvore;
     arvore.tamanho = -1;
     return arvore;
 }
 
+bool estaVazia(bHeap* arvore){
+    // Verifica se a lista esta vazia
+    if (arvore->tamanho == -1){
+        printf("Arvore vazia. \n");
+        return true;
+    }
+    return false;
+    
+}
 
 void preencher_Heap(bHeap *arvore, int valores[], int tamanho) {
+    // Preenche a array no[] bHeap com a lista fornecida
     for (int i = 0; i < tamanho; i++) {
         arvore->no[i] = valores[i];
     }
@@ -26,6 +41,7 @@ void preencher_Heap(bHeap *arvore, int valores[], int tamanho) {
 }
 
 void add(int valor, bHeap* arvore){
+    // Adiciona o valor na arvore
     arvore->tamanho++;
     int i = arvore->tamanho;
     arvore->no[i] = valor;
@@ -39,6 +55,7 @@ int parente(int indice, bHeap* arvore){
 }
 
 bool eMaior(int indiceFilho, int indicePai, bHeap* arvore) {
+    // Verifica se o pai é maior que o filho
     return arvore->no[indiceFilho] > arvore->no[indicePai];
 }
 
@@ -68,9 +85,7 @@ void insert(int valor, bHeap* arvore){
             break;
         }
     }
-
 }
-
 
 void heapify(bHeap *arvore, int indicePai){
     // Verifica se o pai é maior que os filhos, e se o novo-filho é maior que seus filhos
@@ -100,10 +115,17 @@ int heapify_i(bHeap *arvore){
     for (int i = ultimoIndicePai / 2 - 1; i >= 0; i--){ 
         heapify(arvore,i);
     }
+    return 1;
 }
 
 int dequeue(bHeap*arvore){
-    if(arvore->tamanho < 0){
+    // Verifica se a arvore esta vazia
+    // Retorna o valor de origem (que no caso é sempre o maior valor da binary heap)
+    // O menor valor passa ser o valor de origem da binary heap 
+    // Binary heap diminui em 1 o seu tamanho.
+    // A binary heap atualiza após o novo valor de origem
+    
+    if(estaVazia(arvore)){
         return 0;
     }
 
@@ -117,41 +139,36 @@ int dequeue(bHeap*arvore){
     return resultado;
 }
 
+void imprimirArvore(bHeap* arvore){
+    // Imprime a arvore, parentes e seus dependentes
+    if(estaVazia(arvore)){
+        return;
+    }
+    printf("\n        === ARVORE RESULTADO === \n");
+    for (int i = 0; i < TAMANHO_LISTA; i++){
+        printf(" || Arvore [%d] - Elemento %d. Pai: [%d] - %d.", i, arvore->no[i], parente(i, arvore), arvore->no[parente(i, arvore)]);
+    }
+
+}
+
 void heapsort(bHeap *arvore){
+    // Inicia a ordenacao da lista, primeiramente transforma ela em binary heap e depois preenche a lista com os valores ordenados.
+    // A lista e preenchida do final até o inicio, do maior para o menor elemento.
     heapify_i(arvore);
-    for (int i = arvore->tamanho; i > 0; i--){
+    for (int i = arvore->tamanho; i >= 0; i--){
         listaOrdenada[i] = dequeue(arvore);
         totalOrdenado++;
     }
 }
 
-bool estaVazia(bHeap* arvore){
-    
-    if (arvore->tamanho == -1){
-        printf("Arvore vazia. \n");
-        return true;
-    }
-    return false;
-    
-}
-
-void imprimirArvore(bHeap* arvore){
-    if(estaVazia(arvore)){
-        return;
-    }
-    printf("\n        === ARVORE RESULTADO === \n");
-    for (int i = 0; i <= arvore->tamanho; i++){
-        printf("\nArvore [%d] - Elemento %d.\nPai: [%d] - %d.\n", i, arvore->no[i], parente(i, arvore), arvore->no[parente(i, arvore)]);
-    }
-
-}
-
 void imprimir_lista_ordenada(){
+    // Imprime a lista pos ordenacao
     if(totalOrdenado == 0){
         return;
     }
+    
     printf("\n        === LISTA RESULTADO === \n|");
-    for (int i = 0; i <= totalOrdenado; i++){
+    for (int i = 0; i < totalOrdenado; i++){
         printf(" %d |", listaOrdenada[i]);
     }
 
@@ -165,7 +182,6 @@ int main(){
 
     MIN-HEAP -> Valor de origem tem que ser MENOR que seus dependentes, e o mesmo de aplica para os outros dependentes.
 
-
     Seguimos a lógica matemática na qual o indice logico do elemento pai, eh encontrado por P ((i-1)/2).
     traduzindo: ((indice atual - 1) divido por 2).
 
@@ -173,40 +189,23 @@ int main(){
     No Esquerdo (2i + 1);
     No Direito (2i + 2).*/ 
     
-    bHeap arvore = iniciarArvore();
-    // Lista para ser ajustada pelo Heap
-    int lista[10] = {10, 54, 1,32, 11, 6, 5, 7, 89, 90};
-    int listaas[10] = {1, 6, 5, 7, 10, 11, 32, 54, 89, 90};
-    printf("\n        === BINARY HEAP === \n\n");
-    printf("     Ordenacao a cada Elemento Adicionado\n\n");
-    imprimirArvore(&arvore);
-    
-    int quantidade = sizeof(lista) / sizeof(lista[0]);
-    for (int i = 0; i < quantidade; i++){
-        printf("Indice [%d] - Elemento %d. \n", i, lista[i]);
-        insert(lista[i], &arvore);
-    }
-    imprimirArvore(&arvore);
-
-    // -----------------------------------------------------------------------------
-    
+    clock_t start, end;
+    double time;
     printf("\n        === BINARY HEAP === \n");
-    printf("     Ordenacao com Lista Pre-Determinada\n\n|");
+    printf("     Ordenacao com Lista Pre-Determinada\n\n");
+    
+    preencher_Heap(&arvore_dois, lista, TAMANHO_LISTA);
 
-    bHeap arvore_dois;
+    start = clock();
     
-    preencher_Heap(&arvore_dois, lista, sizeof(lista) / sizeof(lista[0]));
-    
-    for (int i = 0; i < sizeof(lista) / sizeof(lista[0]); i++){
-        printf(" %d |", lista[i]);
-    }
-    
-    heapify_i(&arvore_dois);
-    imprimirArvore(&arvore_dois);
-
     heapsort(&arvore_dois);
-
+    
+    end = clock();
+    time = (double )(end-start) / CLOCKS_PER_SEC;
+    
     imprimir_lista_ordenada();
-
+    
+    printf("\n\nTempo de execucao: %fs\n", time);
+    
     return 0;
 }
