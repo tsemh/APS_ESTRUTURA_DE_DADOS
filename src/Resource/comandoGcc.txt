@@ -1,0 +1,1 @@
+gcc -Wall -o programa.exe main.c Controller\Heapsort\heapSortController.c Model\Heapsort\bHeap.c Resource\lista.c View\Heapsort\heapSortView.c
