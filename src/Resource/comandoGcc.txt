@@ -1,1 +1,2 @@
-gcc -Wall -o programa.exe main.c Controller\Heapsort\heapSortController.c Model\Heapsort\bHeap.c Resource\lista.c View\Heapsort\heapSortView.c
+Para compilar:
+gcc -o aps_heapsort.exe src\main.c src\Controller\Heapsort\heapSortController.c src\Model\Heapsort\bHeap.c src\Controller\Heapsort\heapSortControllerD.c src\Model\Heapsort\bHeapD.c src\Resource\gerarDados.c src\Resource\lista.c src\View\Heapsort\heapSortView.c src\Controller\Heapsort\heapSortControllerS.c

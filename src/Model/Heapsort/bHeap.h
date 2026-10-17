@@ -1,7 +1,6 @@
 #ifndef B_HEAP_H
 #define B_HEAP_H
 
-#include <stdbool.h>
 #include <stddef.h>
 #include "..\..\Resource\lista.h"
 
