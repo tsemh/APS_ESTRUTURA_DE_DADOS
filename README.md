@@ -1,146 +1,203 @@
-# APS – QUICKSORT
 
-## Introdução
+# APS - Algoritmos de Ordenação
 
-Este projeto foi desenvolvido para a matéria semestral Atividade Prática Supervisionada, vinculada à disciplina de Estrutura de Dados.
+Projeto desenvolvido para a Atividade Prática Supervisionada da disciplina de
+Estrutura de Dados. O programa lê registros de focos de queimadas ou gera
+dados aleatórios e compara quatro algoritmos de ordenação pelo campo
+`risco_fogo`:
 
-O objetivo foi implementar o algoritmo de ordenação **QuickSort** aplicado sobre um conjunto real de dados de focos de queimadas, lidos a partir de um arquivo CSV.
+- **Quick Sort**
+- **Tree Sort**
+- **Heap Sort**
+- **Insertion Sort**
 
----
+O benchmark valida o resultado de cada algoritmo, mede o tempo de execução em
+diferentes cenários e apresenta um ranking geral de desempenho.
 
-## QuickSort
+## Dados utilizados
 
-O QuickSort é um algoritmo de ordenação baseado na estratégia de **divisão e conquista**. A ideia central é escolher um elemento chamado **pivô** e reorganizar os demais elementos de forma que todos os menores fiquem à sua esquerda e todos os maiores à sua direita. Esse processo é repetido recursivamente para cada sub-array resultante.
+O arquivo principal de entrada é:
 
-Nesta implementação, o pivô é sempre o **elemento do meio** do intervalo atual. A partição utiliza a abordagem de dois ponteiros que caminham em direções opostas até se cruzarem, garantindo que a ordenação ocorra **no próprio array** (in-place), sem alocação de memória extra.
-
-O campo utilizado como critério de ordenação é o **risco_fogo** de cada registro, um valor float presente nos dados de queimadas.
-
-O QuickSort possui complexidade **O(n log n)** no caso médio e **O(n²)** no pior caso, embora a escolha do pivô pelo elemento do meio reduza bastante a probabilidade de cair no pior caso.
-
----
-
-## Estrutura do Projeto
-
+```text
+src/Resource/dados_queimadas.csv
 ```
+
+Cada registro é representado por `RegistroFoco`, que contém os dados
+geográficos, temporais e ambientais do foco de queimada. A ordenação considera
+exclusivamente o campo `risco_fogo`, em ordem crescente.
+
+O programa também oferece uma opção para gerar 12.000 valores aleatórios de
+`risco_fogo`, permitindo executar o benchmark sem depender do CSV.
+
+## Algoritmos implementados
+
+### Quick Sort
+
+Implementado em `src/Controller/QuickSort/quick_sort.c`. Utiliza o elemento
+central do intervalo como pivô, particiona o vetor com dois ponteiros e ordena
+as partições recursivamente. A ordenação ocorre **in-place** sobre os registros
+completos.
+
+| Caso | Complexidade |
+| --- | --- |
+| Melhor caso | O(n log n) |
+| Caso médio | O(n log n) |
+| Pior caso | O(n²) |
+| Memória auxiliar | O(log n) em média, pela recursão |
+
+### Tree Sort
+
+Implementado em `src/Controller/TreeSort/treeSortController.c` e
+`src/Model/TreeSort/noModel.c`. Os valores de `risco_fogo` são inseridos em uma
+árvore binária de busca. Uma travessia **em ordem** recupera os valores
+ordenados. Valores repetidos são armazenados no mesmo nó por meio do campo
+`repeticoes`.
+
+| Caso | Complexidade |
+| --- | --- |
+| Melhor/caso médio | O(n log n) |
+| Pior caso | O(n²) |
+| Memória auxiliar | O(n) |
+
+Os nós são liberados ao final da ordenação. A implementação também trata
+falhas de alocação e libera a árvore parcial antes de retornar.
+
+### Heap Sort
+
+Implementado em `heapsort.c`. Constrói um **max-heap** e move repetidamente o
+maior elemento para o final do vetor. O algoritmo ordena os valores de
+`risco_fogo` em um vetor auxiliar.
+
+| Caso | Complexidade |
+| --- | --- |
+| Melhor caso | O(n log n) |
+| Caso médio | O(n log n) |
+| Pior caso | O(n log n) |
+| Memória auxiliar | O(1) no vetor do algoritmo |
+
+### Insertion Sort
+
+Implementado em `src/Model/Insertion/insertionSortModel.c`. Percorre os
+registros da esquerda para a direita e insere cada elemento na posição correta
+da parte já ordenada. A implementação preserva o registro completo, embora
+compare apenas `risco_fogo`.
+
+| Caso | Complexidade |
+| --- | --- |
+| Melhor caso | O(n) |
+| Caso médio | O(n²) |
+| Pior caso | O(n²) |
+| Memória auxiliar | O(1) no vetor do algoritmo |
+
+## Benchmark
+
+O `src/main.c` executa todos os quatro algoritmos nos mesmos dados e nos
+seguintes cenários:
+
+1. Dados não ordenados
+2. Dados ordenados
+3. Dados invertidos, em ordem decrescente
+4. Dados semi-ordenados, com 80% ordenados e 20% aleatórios
+
+Para cada combinação de algoritmo e cenário, o programa:
+
+- cria uma cópia independente dos dados;
+- mede o tempo com `clock()`;
+- verifica se a saída está em ordem crescente;
+- exibe os resultados individuais;
+- calcula um ranking pela soma dos tempos válidos dos quatro cenários.
+
+Também são executados testes controlados de falha de alocação para verificar o
+tratamento de buffers e de nós da Tree Sort.
+
+## Estrutura do projeto
+
+```text
 APS_ESTRUTURA_DE_DADOS/
+├── README.md
+├── heapsort.c
+├── aps_ordenacao_quickSort.exe
+├── benchmark
+├── executavel.exe
+├── insertion_sort
+├── treesort
 ├── src/
 │   ├── main.c
-│   ├── Model/
-│   │   └── QuickSort/
-│   │       └── modelo_satelite.h
 │   ├── Controller/
-│   │   └── QuickSort/
-│   │       ├── dados_controller.h
-│   │       ├── dados_controller.c
-│   │       ├── quick_sort.h
-│   │       └── quick_sort.c
-│   └── Resource/
-│       └── dados_queimadas.csv
-└── README.md
+│   │   ├── HeapSort/
+│   │   │   └── podeAlterar.txt
+│   │   ├── Insertion/
+│   │   │   ├── insertionSortController.c
+│   │   │   └── insertionSortController.h
+│   │   ├── QuickSort/
+│   │   │   ├── dados_controller.c
+│   │   │   ├── dados_controller.h
+│   │   │   ├── quick_sort.c
+│   │   │   └── quick_sort.h
+│   │   └── TreeSort/
+│   │       ├── treeSortController.c
+│   │       └── treeSortController.h
+│   ├── Model/
+│   │   ├── Heap/
+│   │   │   └── podeAlterar.txt
+│   │   ├── Insertion/
+│   │   │   ├── insertionSortModel.c
+│   │   │   └── insertionSortModel.h
+│   │   ├── QuickSort/
+│   │   │   └── modelo_satelite.h
+│   │   └── TreeSort/
+│   │       ├── noModel.c
+│   │       └── noModel.h
+│   ├── Resource/
+│   │   ├── APS_3_4_CC_2026_EDados_Ajustado.pdf
+│   │   ├── TXT/
+│   │   │   └── teste.txt
+│   │   ├── dados_queimadas.csv
+│   │   └── reuniao_01
+│   └── View/
+│       └── podeAlterar.txt
 ```
 
----
+Os arquivos executáveis (`benchmark`, `insertion_sort`, `treesort`,
+`executavel.exe` e `aps_ordenacao_quickSort.exe`) são versões compiladas do
+projeto. O arquivo `heapsort.c` contém a implementação reutilizável do Heap
+Sort utilizada pelo benchmark.
 
-## TAD RegistroFoco
+## Compilação
 
-Estrutura que representa um registro de foco de queimada lido do CSV.
-
-```c
-typedef struct {
-    float latitude;
-    float longitude;
-    char data_pas[25];
-    char satelite[30];
-    char pais[30];
-    char estado[30];
-    char municipio[60];
-    char bioma[30];
-    int numero_dias_sem_chuva;
-    float precipitacao;
-    float risco_fogo;
-    char id_area_industrial[20];
-    float frp;
-} RegistroFoco;
-```
-
-Cada campo corresponde a uma coluna do arquivo CSV. O campo principal para a ordenação é o **risco_fogo**.
-
----
-
-## Funções Implementadas
-
-### carregar_dados_csv()
-
-Realiza a leitura do arquivo CSV e carrega os registros na memória dinamicamente.
-
-Aloca espaço para até 125.000 registros, lê linha por linha com `fgets` e tokeniza cada campo com `strtok`. A primeira linha do arquivo (cabeçalho) é descartada automaticamente.
-
-**Parâmetros:** caminho do arquivo e ponteiro para o contador de registros.  
-**Retorno:** ponteiro para o array de `RegistroFoco` alocado em heap.
-
----
-
-### executar_quick_sort()
-
-Ponto de entrada do algoritmo. Verifica se o array possui mais de um elemento e chama a função recursiva interna.
-
-**Parâmetros:** ponteiro para o array de `RegistroFoco` e o tamanho total.
-
----
-
-### quick_sort_recursivo()
-
-Função recursiva que divide o array ao redor do pivô e ordena cada metade independentemente.
-
-**Parâmetros:** ponteiro para o array, índice de início e índice de fim do intervalo atual.
-
----
-
-### particionar()
-
-Realiza a partição do array em torno do pivô (elemento do meio). Usa dois ponteiros `i` e `j` que avançam em direções opostas. Quando `i >= j`, retorna `j` como ponto de divisão.
-
-**Parâmetros:** ponteiro para o array, índice de início e índice de fim.  
-**Retorno:** índice do ponto de divisão.
-
----
-
-### trocar()
-
-Realiza a troca de dois elementos do tipo `RegistroFoco` utilizando uma variável temporária.
-
-**Parâmetros:** dois ponteiros para `RegistroFoco`.
-
----
-
-### clonar_dados()
-
-Cria uma cópia independente do array original utilizando `memcpy`. Isso permite que o array original permaneça intacto enquanto cada algoritmo ordena sua própria cópia.
-
-**Parâmetros:** ponteiro para o array original e o tamanho.  
-**Retorno:** ponteiro para o novo array clonado.
-
----
-
-### clock()
-
-Função da biblioteca `<time.h>` utilizada para medir o tempo de execução da ordenação. O tempo é calculado pela diferença entre os valores de `clock_t` capturados antes e depois da chamada do algoritmo, dividido por `CLOCKS_PER_SEC`.
-
----
-
-## Como Compilar e Executar
-
-Certifique-se de ter o GCC instalado. A partir da raiz do projeto:
+É necessário ter um compilador C compatível com C99, como o GCC. A partir da
+raiz do projeto, execute:
 
 ```bash
-gcc src/main.c src/Controller/QuickSort/dados_controller.c src/Controller/QuickSort/quick_sort.c -o aps_ordenacao_quickSort
+gcc -std=c99 -Wall -Wextra -pedantic \
+  src/main.c \
+  src/Controller/Insertion/insertionSortController.c \
+  src/Model/Insertion/insertionSortModel.c \
+  src/Controller/QuickSort/dados_controller.c \
+  src/Controller/QuickSort/quick_sort.c \
+  src/Controller/TreeSort/treeSortController.c \
+  src/Model/TreeSort/noModel.c \
+  heapsort.c \
+  -o benchmark
 ```
 
-Em seguida, execute:
+No Linux, a implementação usa funções POSIX (`dup`, `dup2`, `open` e
+`STDOUT_FILENO`) para silenciar uma mensagem duplicada durante o carregamento
+do CSV. Em ambientes estritamente não POSIX, remova essa lógica de
+`carregarCsvSilencioso` ou compile utilizando uma camada de compatibilidade.
+
+## Execução
 
 ```bash
-./aps_ordenacao_quickSort
+./benchmark
 ```
 
-O programa irá carregar os dados do CSV, ordenar pelo campo `risco_fogo` e exibir o tempo de execução no terminal.
+Escolha uma das opções exibidas:
+
+```text
+1 - Utilizar dados do arquivo CSV
+2 - Utilizar dados aleatórios
+```
+
+O resultado contém os tempos por cenário, o resumo comparativo, o ranking dos
+algoritmos e os testes de falha de memória.
