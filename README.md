@@ -102,7 +102,7 @@ seguintes cenários:
 Para cada combinação de algoritmo e cenário, o programa:
 
 - cria uma cópia independente dos dados;
-- mede o tempo com `clock()`;
+- mede o tempo com `clock_gettime(CLOCK_MONOTONIC)`;
 - verifica se a saída está em ordem crescente;
 - exibe os resultados individuais;
 - calcula um ranking pela soma dos tempos válidos dos quatro cenários.
@@ -148,18 +148,13 @@ APS_ESTRUTURA_DE_DADOS/
 │   │   ├── dados_queimadas.csv
 │   │   └── reuniao_01
 │   └── View/
-├── aps_ordenacao_quickSort.exe
-├── benchmark
-├── executavel.exe
-├── insertion_sort
-├── treesort
+├── benchmark.exe
 └── README.md
 ```
 
-Os arquivos executáveis (`benchmark`, `insertion_sort`, `treesort`,
-`executavel.exe` e `aps_ordenacao_quickSort.exe`) são versões compiladas do
-projeto. O Heap Sort segue a separação MVC: o Controller coordena a execução e
-o Model contém a implementação do algoritmo.
+O arquivo `benchmark.exe` é o executável gerado pela compilação do projeto.
+Os algoritmos seguem a separação MVC: os Controllers coordenam a execução e
+os Models contêm as implementações dos algoritmos e das estruturas de dados.
 
 ## Compilação
 
