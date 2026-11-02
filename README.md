@@ -114,13 +114,6 @@ tratamento de buffers e de nós da Tree Sort.
 
 ```text
 APS_ESTRUTURA_DE_DADOS/
-├── README.md
-├── heapsort.c
-├── aps_ordenacao_quickSort.exe
-├── benchmark
-├── executavel.exe
-├── insertion_sort
-├── treesort
 ├── src/
 │   ├── main.c
 │   ├── Controller/
@@ -156,6 +149,13 @@ APS_ESTRUTURA_DE_DADOS/
 │   │   └── reuniao_01
 │   └── View/
 │       └── podeAlterar.txt
+├── heapsort.c
+├── aps_ordenacao_quickSort.exe
+├── benchmark
+├── executavel.exe
+├── insertion_sort
+├── treesort
+|_ README.md
 ```
 
 Os arquivos executáveis (`benchmark`, `insertion_sort`, `treesort`,
