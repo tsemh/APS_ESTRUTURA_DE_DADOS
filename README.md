@@ -65,8 +65,8 @@ falhas de alocação e libera a árvore parcial antes de retornar.
 
 O Controller está em `src/Controller/HeapSort/heapSortController.c` e expõe
 `executar_heap_sort()`. A implementação do **max-heap** está no Model, em
-`src/Model/Heap/heapSortModel.c`, que move repetidamente o maior elemento para
-o final do vetor auxiliar de `risco_fogo`.
+`src/Model/Heap/heapSortModel.c`, que move repetidamente o maior registro para
+o final do vetor, comparando `risco_fogo`.
 
 | Caso             | Complexidade               |
 | ---------------- | -------------------------- |

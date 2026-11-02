@@ -113,6 +113,17 @@ static void celula(const char *s, int w) {
     repetir(' ', w - larguraUtf8(s));
 }
 
+static double tempoMonotonic(void) {
+    struct timespec instante;
+
+    if (clock_gettime(CLOCK_MONOTONIC, &instante) != 0) {
+        return -1.0;
+    }
+
+    return (double)instante.tv_sec +
+           (double)instante.tv_nsec / 1000000000.0;
+}
+
 /* ===================================================================== */
 /*                              BENCHMARK                                */
 /* ===================================================================== */
@@ -403,8 +414,6 @@ static int executarBenchmark(int aleatorio, const char *caminhoCsv) {
                 (size_t)total * sizeof(*copia)
             );
 
-            float *valores = NULL;
-
             if (copia == NULL) {
                 resultados[alg].ok[c] = 0;
                 continue;
@@ -413,91 +422,28 @@ static int executarBenchmark(int aleatorio, const char *caminhoCsv) {
             memcpy(copia, base, (size_t)total * sizeof(*copia));
 
             int ok = 1;
-            clock_t inicio = clock();
+            double inicio = tempoMonotonic();
 
             if (alg == 0) {
                 executar_quick_sort(copia, total);
             } else if (alg == 1) {
-                float *entrada = alocarBufferBenchmark(
-                    (size_t)total * sizeof(*entrada)
-                );
-                float *saida = alocarBufferBenchmark(
-                    (size_t)total * sizeof(*saida)
-                );
-
-                if (entrada != NULL && saida != NULL) {
-                    for (int i = 0; i < total; i++) {
-                        entrada[i] = copia[i].risco_fogo;
-                    }
-
-                    ok = ordenarRiscosComArvore(
-                        entrada,
-                        (size_t)total,
-                        saida
-                    );
-
-                    for (int i = 1; i < total && ok; i++) {
-                        if (saida[i - 1] > saida[i]) {
-                            ok = 0;
-                        }
-                    }
-                } else {
-                    ok = 0;
-                }
-
-                free(entrada);
-                free(saida);
+                ok = ordenarRegistrosComArvore(copia, (size_t)total);
             } else if (alg == 2) {
-                valores = alocarBufferBenchmark(
-                    (size_t)total * sizeof(*valores)
-                );
-
-                if (valores != NULL) {
-                    for (int i = 0; i < total; i++) {
-                        valores[i] = copia[i].risco_fogo;
-                    }
-
-                    executar_heap_sort(valores, (size_t)total);
-                } else {
-                    ok = 0;
-                }
+                executar_heap_sort(copia, (size_t)total);
             } else {
-                for (int i = 1; i < total; i++) {
-                    RegistroFoco chave = copia[i];
-                    int j = i - 1;
-
-                    while (
-                        j >= 0 &&
-                        copia[j].risco_fogo > chave.risco_fogo
-                    ) {
-                        copia[j + 1] = copia[j];
-                        j--;
-                    }
-
-                    copia[j + 1] = chave;
-                }
+                executar_insertion_sort(copia, (size_t)total);
             }
 
-            clock_t fim = clock();
+            double fim = tempoMonotonic();
 
-            if (alg == 0 || alg == 3) {
+            if (ok) {
                 ok = validarRiscos(copia, total);
             }
 
-            if (alg == 2 && valores != NULL) {
-                for (int i = 1; i < total; i++) {
-                    if (valores[i - 1] > valores[i]) {
-                        ok = 0;
-                    }
-                }
-            }
+            resultados[alg].tempos[c] = fim - inicio;
 
-            resultados[alg].tempos[c] =
-                (double)(fim - inicio) / CLOCKS_PER_SEC;
+            resultados[alg].ok[c] = ok && inicio >= 0.0 && fim >= inicio;
 
-            resultados[alg].ok[c] = ok;
-
-            free(valores);
             free(copia);
         }
 

@@ -3,6 +3,14 @@
 #include <string.h>
 #include <time.h>
 #include "../../Model/Insertion/insertionSortModel.h"
+
+void executar_insertion_sort(RegistroFoco registros[], size_t tamanho) {
+    if (registros == NULL && tamanho > 0) {
+        return;
+    }
+
+    ordenarFocosInsertionSort(registros, tamanho);
+}
 #include "insertionSortController.h"
 
 static int extrairRiscoFogo(const char *linha, double *riscoFogo) {

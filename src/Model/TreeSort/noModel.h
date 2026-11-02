@@ -2,6 +2,7 @@
 #define NO_MODEL_H
 
 #include <stddef.h>
+#include "../QuickSort/modelo_satelite.h"
 
 typedef struct NoModel {
     float valor;
@@ -15,5 +16,20 @@ void simularFalhaNaAlocacaoDoNo(size_t numeroAlocacao);
 int inserir(NoModel** raiz, float valor);
 void emOrdem(const NoModel* raiz, float* saida, size_t* indice);
 void destruirArvore(NoModel* raiz);
+
+typedef struct NoRegistroModel {
+    RegistroFoco registro;
+    struct NoRegistroModel *esquerda;
+    struct NoRegistroModel *direita;
+} NoRegistroModel;
+
+NoRegistroModel *criarNoRegistro(const RegistroFoco *registro);
+int inserirRegistro(NoRegistroModel **raiz, const RegistroFoco *registro);
+void emOrdemRegistros(
+    const NoRegistroModel *raiz,
+    RegistroFoco saida[],
+    size_t *indice
+);
+void destruirArvoreRegistros(NoRegistroModel *raiz);
 
 #endif

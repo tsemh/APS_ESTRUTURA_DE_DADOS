@@ -1,21 +1,23 @@
 #include "heapSortModel.h"
 
-static void trocar(float *a, float *b) {
-    float temporario = *a;
+static void trocar(RegistroFoco *a, RegistroFoco *b) {
+    RegistroFoco temporario = *a;
     *a = *b;
     *b = temporario;
 }
 
-static void ajustarHeap(float dados[], size_t tamanho, size_t raiz) {
+static void ajustarHeap(RegistroFoco dados[], size_t tamanho, size_t raiz) {
     size_t maior = raiz;
     size_t esquerda = 2 * raiz + 1;
     size_t direita = 2 * raiz + 2;
 
-    if (esquerda < tamanho && dados[esquerda] > dados[maior]) {
+    if (esquerda < tamanho &&
+        dados[esquerda].risco_fogo > dados[maior].risco_fogo) {
         maior = esquerda;
     }
 
-    if (direita < tamanho && dados[direita] > dados[maior]) {
+    if (direita < tamanho &&
+        dados[direita].risco_fogo > dados[maior].risco_fogo) {
         maior = direita;
     }
 
@@ -25,7 +27,7 @@ static void ajustarHeap(float dados[], size_t tamanho, size_t raiz) {
     }
 }
 
-void heap_sort_model(float dados[], size_t tamanho) {
+void heap_sort_model(RegistroFoco dados[], size_t tamanho) {
     if (dados == NULL || tamanho < 2) {
         return;
     }
