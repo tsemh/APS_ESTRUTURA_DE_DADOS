@@ -1,4 +1,3 @@
-
 # APS - Algoritmos de Ordenação
 
 Projeto desenvolvido para a Atividade Prática Supervisionada da disciplina de
@@ -38,11 +37,11 @@ central do intervalo como pivô, particiona o vetor com dois ponteiros e ordena
 as partições recursivamente. A ordenação ocorre **in-place** sobre os registros
 completos.
 
-| Caso | Complexidade |
-| --- | --- |
-| Melhor caso | O(n log n) |
-| Caso médio | O(n log n) |
-| Pior caso | O(n²) |
+| Caso             | Complexidade                     |
+| ---------------- | -------------------------------- |
+| Melhor caso      | O(n log n)                       |
+| Caso médio       | O(n log n)                       |
+| Pior caso        | O(n²)                            |
 | Memória auxiliar | O(log n) em média, pela recursão |
 
 ### Tree Sort
@@ -53,11 +52,11 @@ Implementado em `src/Controller/TreeSort/treeSortController.c` e
 ordenados. Valores repetidos são armazenados no mesmo nó por meio do campo
 `repeticoes`.
 
-| Caso | Complexidade |
-| --- | --- |
-| Melhor/caso médio | O(n log n) |
-| Pior caso | O(n²) |
-| Memória auxiliar | O(n) |
+| Caso              | Complexidade |
+| ----------------- | ------------ |
+| Melhor/caso médio | O(n log n)   |
+| Pior caso         | O(n²)        |
+| Memória auxiliar  | O(n)         |
 
 Os nós são liberados ao final da ordenação. A implementação também trata
 falhas de alocação e libera a árvore parcial antes de retornar.
@@ -69,11 +68,11 @@ O Controller está em `src/Controller/HeapSort/heapSortController.c` e expõe
 `src/Model/Heap/heapSortModel.c`, que move repetidamente o maior elemento para
 o final do vetor auxiliar de `risco_fogo`.
 
-| Caso | Complexidade |
-| --- | --- |
-| Melhor caso | O(n log n) |
-| Caso médio | O(n log n) |
-| Pior caso | O(n log n) |
+| Caso             | Complexidade               |
+| ---------------- | -------------------------- |
+| Melhor caso      | O(n log n)                 |
+| Caso médio       | O(n log n)                 |
+| Pior caso        | O(n log n)                 |
 | Memória auxiliar | O(1) no vetor do algoritmo |
 
 ### Insertion Sort
@@ -83,11 +82,11 @@ registros da esquerda para a direita e insere cada elemento na posição correta
 da parte já ordenada. A implementação preserva o registro completo, embora
 compare apenas `risco_fogo`.
 
-| Caso | Complexidade |
-| --- | --- |
-| Melhor caso | O(n) |
-| Caso médio | O(n²) |
-| Pior caso | O(n²) |
+| Caso             | Complexidade               |
+| ---------------- | -------------------------- |
+| Melhor caso      | O(n)                       |
+| Caso médio       | O(n²)                      |
+| Pior caso        | O(n²)                      |
 | Memória auxiliar | O(1) no vetor do algoritmo |
 
 ## Benchmark
@@ -146,12 +145,9 @@ APS_ESTRUTURA_DE_DADOS/
 │   │       └── noModel.h
 │   ├── Resource/
 │   │   ├── APS_3_4_CC_2026_EDados_Ajustado.pdf
-│   │   ├── TXT/
-│   │   │   └── teste.txt
 │   │   ├── dados_queimadas.csv
 │   │   └── reuniao_01
 │   └── View/
-│       └── podeAlterar.txt
 ├── aps_ordenacao_quickSort.exe
 ├── benchmark
 ├── executavel.exe
