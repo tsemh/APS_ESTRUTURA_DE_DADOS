@@ -1,4 +1,3 @@
-
 # APS - Algoritmos de Ordenação
 
 Projeto desenvolvido para a Atividade Prática Supervisionada da disciplina de
@@ -38,11 +37,11 @@ central do intervalo como pivô, particiona o vetor com dois ponteiros e ordena
 as partições recursivamente. A ordenação ocorre **in-place** sobre os registros
 completos.
 
-| Caso | Complexidade |
-| --- | --- |
-| Melhor caso | O(n log n) |
-| Caso médio | O(n log n) |
-| Pior caso | O(n²) |
+| Caso             | Complexidade                     |
+| ---------------- | -------------------------------- |
+| Melhor caso      | O(n log n)                       |
+| Caso médio       | O(n log n)                       |
+| Pior caso        | O(n²)                            |
 | Memória auxiliar | O(log n) em média, pela recursão |
 
 ### Tree Sort
@@ -53,26 +52,27 @@ Implementado em `src/Controller/TreeSort/treeSortController.c` e
 ordenados. Valores repetidos são armazenados no mesmo nó por meio do campo
 `repeticoes`.
 
-| Caso | Complexidade |
-| --- | --- |
-| Melhor/caso médio | O(n log n) |
-| Pior caso | O(n²) |
-| Memória auxiliar | O(n) |
+| Caso              | Complexidade |
+| ----------------- | ------------ |
+| Melhor/caso médio | O(n log n)   |
+| Pior caso         | O(n²)        |
+| Memória auxiliar  | O(n)         |
 
 Os nós são liberados ao final da ordenação. A implementação também trata
 falhas de alocação e libera a árvore parcial antes de retornar.
 
 ### Heap Sort
 
-Implementado em `heapsort.c`. Constrói um **max-heap** e move repetidamente o
-maior elemento para o final do vetor. O algoritmo ordena os valores de
-`risco_fogo` em um vetor auxiliar.
+O Controller está em `src/Controller/HeapSort/heapSortController.c` e expõe
+`executar_heap_sort()`. A implementação do **max-heap** está no Model, em
+`src/Model/Heap/heapSortModel.c`, que move repetidamente o maior registro para
+o final do vetor, comparando `risco_fogo`.
 
-| Caso | Complexidade |
-| --- | --- |
-| Melhor caso | O(n log n) |
-| Caso médio | O(n log n) |
-| Pior caso | O(n log n) |
+| Caso             | Complexidade               |
+| ---------------- | -------------------------- |
+| Melhor caso      | O(n log n)                 |
+| Caso médio       | O(n log n)                 |
+| Pior caso        | O(n log n)                 |
 | Memória auxiliar | O(1) no vetor do algoritmo |
 
 ### Insertion Sort
@@ -82,11 +82,11 @@ registros da esquerda para a direita e insere cada elemento na posição correta
 da parte já ordenada. A implementação preserva o registro completo, embora
 compare apenas `risco_fogo`.
 
-| Caso | Complexidade |
-| --- | --- |
-| Melhor caso | O(n) |
-| Caso médio | O(n²) |
-| Pior caso | O(n²) |
+| Caso             | Complexidade               |
+| ---------------- | -------------------------- |
+| Melhor caso      | O(n)                       |
+| Caso médio       | O(n²)                      |
+| Pior caso        | O(n²)                      |
 | Memória auxiliar | O(1) no vetor do algoritmo |
 
 ## Benchmark
@@ -102,7 +102,7 @@ seguintes cenários:
 Para cada combinação de algoritmo e cenário, o programa:
 
 - cria uma cópia independente dos dados;
-- mede o tempo com `clock()`;
+- mede o tempo com `clock_gettime(CLOCK_MONOTONIC)`;
 - verifica se a saída está em ordem crescente;
 - exibe os resultados individuais;
 - calcula um ranking pela soma dos tempos válidos dos quatro cenários.
@@ -118,7 +118,8 @@ APS_ESTRUTURA_DE_DADOS/
 │   ├── main.c
 │   ├── Controller/
 │   │   ├── HeapSort/
-│   │   │   └── podeAlterar.txt
+│   │   │   ├── heapSortController.c
+│   │   │   └── heapSortController.h
 │   │   ├── Insertion/
 │   │   │   ├── insertionSortController.c
 │   │   │   └── insertionSortController.h
@@ -132,7 +133,8 @@ APS_ESTRUTURA_DE_DADOS/
 │   │       └── treeSortController.h
 │   ├── Model/
 │   │   ├── Heap/
-│   │   │   └── podeAlterar.txt
+│   │   │   ├── heapSortModel.c
+│   │   │   └── heapSortModel.h
 │   │   ├── Insertion/
 │   │   │   ├── insertionSortModel.c
 │   │   │   └── insertionSortModel.h
@@ -143,25 +145,16 @@ APS_ESTRUTURA_DE_DADOS/
 │   │       └── noModel.h
 │   ├── Resource/
 │   │   ├── APS_3_4_CC_2026_EDados_Ajustado.pdf
-│   │   ├── TXT/
-│   │   │   └── teste.txt
 │   │   ├── dados_queimadas.csv
 │   │   └── reuniao_01
 │   └── View/
-│       └── podeAlterar.txt
-├── heapsort.c
-├── aps_ordenacao_quickSort.exe
-├── benchmark
-├── executavel.exe
-├── insertion_sort
-├── treesort
-|_ README.md
+├── benchmark.exe
+└── README.md
 ```
 
-Os arquivos executáveis (`benchmark`, `insertion_sort`, `treesort`,
-`executavel.exe` e `aps_ordenacao_quickSort.exe`) são versões compiladas do
-projeto. O arquivo `heapsort.c` contém a implementação reutilizável do Heap
-Sort utilizada pelo benchmark.
+O arquivo `benchmark.exe` é o executável gerado pela compilação do projeto.
+Os algoritmos seguem a separação MVC: os Controllers coordenam a execução e
+os Models contêm as implementações dos algoritmos e das estruturas de dados.
 
 ## Compilação
 
@@ -169,7 +162,7 @@ Sort utilizada pelo benchmark.
 raiz do projeto, execute:
 
 ```bash
-gcc -std=c99 -Wall -Wextra -pedantic \
+gcc -std=c99 -Wall -Wextra -Wpedantic -Wformat=2 \
   src/main.c \
   src/Controller/Insertion/insertionSortController.c \
   src/Model/Insertion/insertionSortModel.c \
@@ -177,14 +170,19 @@ gcc -std=c99 -Wall -Wextra -pedantic \
   src/Controller/QuickSort/quick_sort.c \
   src/Controller/TreeSort/treeSortController.c \
   src/Model/TreeSort/noModel.c \
-  heapsort.c \
+  src/Controller/HeapSort/heapSortController.c \
+  src/Model/Heap/heapSortModel.c \
+  -lm \
   -o benchmark
 ```
 
-No Linux, a implementação usa funções POSIX (`dup`, `dup2`, `open` e
-`STDOUT_FILENO`) para silenciar uma mensagem duplicada durante o carregamento
-do CSV. Em ambientes estritamente não POSIX, remova essa lógica de
-`carregarCsvSilencioso` ou compile utilizando uma camada de compatibilidade.
+O programa usa funções POSIX (`dup`, `dup2`, `open`, `STDOUT_FILENO` e
+`getcwd`) para silenciar a mensagem duplicada do carregamento e
+localizar `src/Resource/dados_queimadas.csv` relativo ao executável. Assim, o
+CSV também pode ser carregado quando o programa é iniciado fora da raiz do
+projeto. `PATH_MAX` recebe um valor padrão quando não é fornecido pelo sistema.
+Em ambientes estritamente não POSIX, é necessária uma camada de compatibilidade
+para essas funções.
 
 ## Execução
 
