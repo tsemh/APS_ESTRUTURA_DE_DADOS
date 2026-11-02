@@ -1,3 +1,5 @@
+#define _POSIX_C_SOURCE 200809L
+
 #include <ctype.h>
 #include <errno.h>
 #include <limits.h>
@@ -16,8 +18,11 @@
 #include "Model/TreeSort/noModel.h"
 #include "Controller/QuickSort/dados_controller.h"
 #include "Controller/QuickSort/quick_sort.h"
+#include "Controller/HeapSort/heapSortController.h"
 
-void heap_sort(float dados[], size_t tamanho);
+#ifndef PATH_MAX
+#define PATH_MAX 4096
+#endif
 
 /* ===================================================================== */
 /*                     FUNCOES AUXILIARES DE INTERFACE                   */
@@ -29,7 +34,7 @@ void heap_sort(float dados[], size_t tamanho);
 #define SEP "+---------------------------------+----------------+" \
             "----------------+----------------+----------------+\n"
 
-/* Conta caracteres UTF-8 (printf conta bytes e desalinha com acentos). */
+/* Conta caracteres ASCII usados na interface. */
 static int larguraUtf8(const char *s) {
     int n = 0;
 
@@ -220,7 +225,7 @@ static int testarFalhaBuffer(const char *algoritmo) {
     free(buffer);
 
     linhaTexto(
-        "%-20s | ERRO: falha de buffer não detectada",
+        "%-20s | ERRO: falha de buffer nao detectada",
         algoritmo
     );
 
@@ -243,16 +248,16 @@ static int testarFalhaInternaTreeSort(void) {
     if (!sucesso) {
         linhaTexto(
             "%-20s | falha interna detectada; "
-            "árvore parcial liberada",
-            "Tree Sort (nó)"
+            "arvore parcial liberada",
+            "Tree Sort (no)"
         );
 
         return 1;
     }
 
     linhaTexto(
-        "%-20s | ERRO: ordenação continuou após falha de nó",
-        "Tree Sort (nó)"
+        "%-20s | ERRO: ordenacao continuou apos falha de no",
+        "Tree Sort (no)"
     );
 
     return 0;
@@ -290,18 +295,57 @@ static RegistroFoco *carregarCsvSilencioso(const char *caminho, int *total) {
 }
 
 /* Executa o benchmark completo. */
-static int executarBenchmark(int aleatorio) {
+static int localizarCsv(const char *argv0, char caminho[PATH_MAX]) {
+    char executavel[PATH_MAX];
+    char *ultimaBarra;
+    int caminhoAbsoluto = argv0[0] == '/' || argv0[0] == '\\' ||
+        (isalpha((unsigned char)argv0[0]) && argv0[1] == ':');
+
+    if (caminhoAbsoluto) {
+        if (snprintf(executavel, sizeof(executavel), "%s", argv0) >=
+            (int)sizeof(executavel)) {
+            return 0;
+        }
+    } else {
+        char diretorioAtual[PATH_MAX];
+
+        if (getcwd(diretorioAtual, sizeof(diretorioAtual)) == NULL ||
+            snprintf(executavel, sizeof(executavel), "%s/%s",
+                     diretorioAtual, argv0) >= (int)sizeof(executavel)) {
+            return 0;
+        }
+    }
+
+    ultimaBarra = strrchr(executavel, '/');
+    if (ultimaBarra == NULL) {
+        ultimaBarra = strrchr(executavel, '\\');
+    }
+    if (ultimaBarra == NULL) {
+        return snprintf(caminho, PATH_MAX, "src/Resource/dados_queimadas.csv")
+            < PATH_MAX;
+    }
+
+    *ultimaBarra = '\0';
+    return snprintf(
+        caminho,
+        PATH_MAX,
+        "%s/src/Resource/dados_queimadas.csv",
+        executavel
+    ) < PATH_MAX;
+}
+
+static int executarBenchmark(int aleatorio, const char *caminhoCsv) {
     int total = 0;
 
     printf("\n");
-    linhaTitulo('=', '=', '=', "BENCHMARK | ALGORITMOS DE ORDENAÇÃO");
+    linhaTitulo('=', '=', '=', "BENCHMARK | ALGORITMOS DE ORDENACAO");
     printf("Iniciando leitura dos dados...\n");
 
     RegistroFoco *originais = NULL;
 
     if (!aleatorio) {
         originais = carregarCsvSilencioso(
-            "src/Resource/dados_queimadas.csv",
+            caminhoCsv,
             &total
         );
     } else {
@@ -322,13 +366,13 @@ static int executarBenchmark(int aleatorio) {
         return 1;
     }
 
-    printf("Carregando %d registros na memória.\n", total);
+    printf("Carregando %d registros na memoria.\n", total);
 
     const char *cenarios[] = {
-        "Dados não ordenados",
+        "Dados nao ordenados",
         "Dados ordenados",
         "Dados invertidos",
-        "Dados semi-ordenados (80% ordenado + 20% aleatório)"
+        "Dados semi-ordenados (80% ordenado + 20% aleatorio)"
     };
 
     Resultado resultados[4] = {
@@ -345,7 +389,7 @@ static int executarBenchmark(int aleatorio) {
 
         if (base == NULL) {
             printf(
-                "Falha de memória ao criar cenário: %s\n",
+                "Falha de memoria ao criar cenario: %s\n",
                 cenarios[c]
             );
             continue;
@@ -413,7 +457,7 @@ static int executarBenchmark(int aleatorio) {
                         valores[i] = copia[i].risco_fogo;
                     }
 
-                    heap_sort(valores, (size_t)total);
+                    executar_heap_sort(valores, (size_t)total);
                 } else {
                     ok = 0;
                 }
@@ -471,17 +515,17 @@ static int executarBenchmark(int aleatorio) {
         linhaTexto("%s", "");
 
         const char *nomesCenario[4] = {
-            "Dados não ordenados",
+            "Dados nao ordenados",
             "Dados ordenados",
             "Dados invertidos (ordem decrescente)",
-            "Dados semi-ordenados (80% ordenado + 20% aleatório)"
+            "Dados semi-ordenados (80% ordenado + 20% aleatorio)"
         };
 
         for (int c = 0; c < 4; c++) {
 
             linhaTexto("%s", nomesCenario[c]);
             linhaTexto(
-                "  Tempo de ordenação: %.6f segundos",
+                "  Tempo de ordenacao: %.6f segundos",
                 resultados[alg].tempos[c]
             );
 
@@ -498,7 +542,7 @@ static int executarBenchmark(int aleatorio) {
     linhaTitulo('=', '=', '=', "RESUMO COMPARATIVO");
 
     printf("| "); celula("Algoritmo", 31);
-    printf(" | "); celula("Não ordenados", 14);
+    printf(" | "); celula("Nao ordenados", 14);
     printf(" | "); celula("Ordenados", 14);
     printf(" | "); celula("Invertidos", 14);
     printf(" | "); celula("Semi-ordenados", 14);
@@ -557,12 +601,12 @@ static int executarBenchmark(int aleatorio) {
     /* indices[] ja esta ordenado do mais rapido para o mais lento. */
     for (int i = 0; i < 4; i++) {
         int ind = indices[i];
-        const char *obs = (i == 0) ? "(mais rápido)"
+        const char *obs = (i == 0) ? "(mais rapido)"
                         : (i == 3) ? "(mais lento)" : "";
 
         if (totais[ind] == DBL_MAX) {
             linhaTexto(
-                "%d. %-27s - sem resultados válidos",
+                "%d. %-27s - sem resultados validos",
                 i + 1,
                 resultados[ind].nome
             );
@@ -581,7 +625,7 @@ static int executarBenchmark(int aleatorio) {
 
     /* ------------------ Testes de falha de memoria ------------------- */
     printf("\n");
-    linhaTitulo('+', '-', '+', "TESTES DE FALHA DE MEMÓRIA");
+    linhaTitulo('+', '-', '+', "TESTES DE FALHA DE MEMORIA");
 
     testarFalhaBuffer("Quick Sort");
     testarFalhaBuffer("Tree Sort");
@@ -599,27 +643,35 @@ static int executarBenchmark(int aleatorio) {
     return 0;
 }
 
-int main(void) {
+int main(int argc, char **argv) {
     int opcao;
+    char caminhoCsv[PATH_MAX];
 
+    (void)argc;
+    setvbuf(stdout, NULL, _IONBF, 0);
     srand((unsigned int)time(NULL));
 
     printf("\n");
-    linhaTitulo('=', '=', '=', "SISTEMA DE BENCHMARK DE ORDENAÇÃO");
+    linhaTitulo('=', '=', '=', "SISTEMA DE BENCHMARK DE ORDENACAO");
     printf("1 - Utilizar dados do arquivo CSV\n");
-    printf("2 - Utilizar dados Aleatórios\n");
+    printf("2 - Utilizar dados Aleatorios\n");
     linhaFechamento('=', '=', '=');
-    printf("Escolha uma opção: ");
+    printf("Escolha uma opcao: ");
 
     if (scanf("%d", &opcao) != 1) {
-        printf("Opção inválida.\n");
+        printf("Opcao invalida.\n");
         return 1;
     }
 
     if (opcao != 1 && opcao != 2) {
-        printf("Opção inválida.\n");
+        printf("Opcao invalida.\n");
         return 1;
     }
 
-    return executarBenchmark(opcao == 2);
+    if (!localizarCsv(argv[0], caminhoCsv)) {
+        fprintf(stderr, "[ERRO] Caminho do CSV excede PATH_MAX.\n");
+        return 1;
+    }
+
+    return executarBenchmark(opcao == 2, caminhoCsv);
 }
