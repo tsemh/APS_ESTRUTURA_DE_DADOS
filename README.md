@@ -65,7 +65,7 @@ falhas de alocação e libera a árvore parcial antes de retornar.
 
 O Controller está em `src/Controller/HeapSort/heapSortController.c` e expõe
 `executar_heap_sort()`. A implementação do **max-heap** está no Model, em
-`src/Model/Heap/heapSortModel.c`, que move repetidamente o maior registro para
+`src/Model/HeapSort/heapSortModel.c`, que move repetidamente o maior registro para
 o final do vetor, comparando `risco_fogo`.
 
 | Caso             | Complexidade               |
@@ -132,7 +132,7 @@ APS_ESTRUTURA_DE_DADOS/
 │   │       ├── treeSortController.c
 │   │       └── treeSortController.h
 │   ├── Model/
-│   │   ├── Heap/
+│   │   ├── HeapSort/
 │   │   │   ├── heapSortModel.c
 │   │   │   └── heapSortModel.h
 │   │   ├── Insertion/
@@ -144,9 +144,7 @@ APS_ESTRUTURA_DE_DADOS/
 │   │       ├── noModel.c
 │   │       └── noModel.h
 │   ├── Resource/
-│   │   ├── APS_3_4_CC_2026_EDados_Ajustado.pdf
-│   │   ├── dados_queimadas.csv
-│   │   └── reuniao_01
+│   │   └── dados_queimadas.csv
 │   └── View/
 ├── benchmark.exe
 └── README.md
@@ -171,7 +169,7 @@ gcc -std=c99 -Wall -Wextra -Wpedantic -Wformat=2 \
   src/Controller/TreeSort/treeSortController.c \
   src/Model/TreeSort/noModel.c \
   src/Controller/HeapSort/heapSortController.c \
-  src/Model/Heap/heapSortModel.c \
+  src/Model/HeapSort/heapSortModel.c \
   -lm \
   -o benchmark
 ```
