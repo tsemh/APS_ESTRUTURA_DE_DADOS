@@ -143,9 +143,8 @@ APS_ESTRUTURA_DE_DADOS/
 │   │   └── TreeSort/
 │   │       ├── noModel.c
 │   │       └── noModel.h
-│   ├── Resource/
-│   │   └── dados_queimadas.csv
-│   └── View/
+│   └── Resource/
+│       └── dados_queimadas.csv
 ├── benchmark.exe
 └── README.md
 ```
